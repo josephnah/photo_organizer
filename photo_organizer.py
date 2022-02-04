@@ -15,8 +15,8 @@ def move_photos(file_ext, camera_type):
         file_ext_type = 'arw'
     elif file_ext == 'raw' and camera_type == 'canon':
         file_ext_type = 'cr2'
-
-    file_ext_type = file_ext
+    else:
+        file_ext_type = file_ext
 
     bulk_file_ext = '*' + str.upper(file_ext_type)
 
@@ -38,10 +38,17 @@ def move_photos(file_ext, camera_type):
 
             # Get basename of file
             file_name = os.path.basename(file)
-            print(file)
+            # print(file_name)
 
-            # get date time of file
-            file_date = datetime.datetime.fromtimestamp(os.path.getctime(file))
+            # get date time of file, need to deal with create and birth date of file and get earlier timestamp
+            file_stat = Path(file).stat()
+            file_date_birth = datetime.datetime.fromtimestamp(file_stat.st_birthtime)
+            file_date_create = datetime.datetime.fromtimestamp(file_stat.st_ctime)
+
+            if file_date_birth <= file_date_create:
+                file_date = file_date_birth
+            else:
+                file_date = file_date_create
 
             # Get date into desirable folder format
             creation_date = file_date.strftime("%Y") + '/' + file_date.strftime("%m") + '-' + file_date.strftime("%d") + '/'
@@ -63,12 +70,12 @@ def move_photos(file_ext, camera_type):
                 shutil.copy2(file, destination_folder)
                 # print(destination_folder)
 
-
     else:
         print('Nothing to move today! Go grab a coffee or a beer or both...')
 
     time_elapsed = time.time() - x
     print(f'\nDone! All photos copied in {(round(time_elapsed, 5))} seconds')
+
 
 move_photos(file_ext='jpg', camera_type='fuji')
 
