@@ -1,6 +1,5 @@
 import os
 import glob
-import datetime
 from pathlib import Path
 import shutil
 import time
@@ -31,6 +30,7 @@ def move_photos(file_ext, camera_type):
 
     # Get total # of files
     import_list_file = glob.glob(data_alpha_dir + bulk_file_ext)
+    print(data_alpha_dir + bulk_file_ext)
 
     print(f'A total of {len(import_list_file)} photos, {str.lower(file_ext)}s to be specific\n')
 
@@ -53,7 +53,7 @@ def move_photos(file_ext, camera_type):
             creation_date = str(file_date[0:4]) + '/' + str(file_date[5:7]) + '-' + str(file_date[8:10])
 
             # Designate destination folder
-            destination_folder = data_omega_dir + str.upper(file_ext) + '/' + creation_date
+            destination_folder = data_omega_dir + str.upper(file_ext) + '/' + creation_date + '/'
 
             # create folder if it does not exist
             os.makedirs(destination_folder, exist_ok=True)
@@ -73,7 +73,14 @@ def move_photos(file_ext, camera_type):
         print('Nothing to move today! Go grab a coffee or a beer or both...')
 
     time_elapsed = time.time() - x
-    print(f'\nDone! All photos copied in {(round(time_elapsed, 5))} seconds')
+    if time_elapsed > 60:
+        time_elapsed_print = time_elapsed/60
+        time_var = 'minutes'
+    else:
+        time_elapsed_print = time_elapsed
+        time_var = 'seconds'
+
+    print(f'\nDone! All photos copied in {(round(time_elapsed_print, 5))} {time_var}')
 
 
-move_photos(file_ext='raw', camera_type='fuji')
+move_photos(file_ext='jpg', camera_type='fuji')
